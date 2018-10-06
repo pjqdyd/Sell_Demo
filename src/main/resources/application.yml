@@ -1,0 +1,26 @@
+spring:
+   datasource:
+     driver-class-name: com.mysql.jdbc.Driver
+     url: jdbc:mysql://192.168.43.36/sell?characterEncoding=utf-8&useSSL=false
+     username: root
+     password: 123456
+   jpa:
+     show-sql: true
+   jackson:
+     default-property-inclusion: non_null
+   redis:
+        host: 192.168.43.36
+        port: 6379
+        password :
+
+server:
+  context-path: /sell
+
+wechat:
+  mpAppid: wx8c68082145a44a78
+  mpAppSecret: c82aa5fb61a44343d383eddabe9c99d0
+  mchId: null
+  mchKey: null
+  keyPath: null
+  notifyUrl: http://pjqdyd.natapp1.cc/sell/wechat/notify
+
