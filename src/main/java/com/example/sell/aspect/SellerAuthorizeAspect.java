@@ -23,22 +23,29 @@ public class SellerAuthorizeAspect {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
-    @Pointcut("execution(public * com.example.sell.controller.Seller*.*(..))")
+
+    @Pointcut("execution(public * com.example.sell.controller.SellerOrderController.list(..))" +
+    "&& !execution(public * com.example.sell.controller.SellerUserController.*(..))")
     public void verify(){}
 
     @Before("verify()")
     public void doVerify(){
-        ServletRequestAttributes attributes =
-                ( ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
+
+       ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
+
         //获取cookie,并检验
         Cookie[] cookies = request.getCookies();
         Cookie tokenCookie = null;
+        if(cookies == null){
+            throw new SellerAuthException(ResultEnum.VERIFY_FAIL);
+        }
         for (Cookie cookie: cookies) {
             if(cookie.getName().equals("token")){
                tokenCookie = cookie; //记录名为token的cookie
             }
         }
+        System.out.println("------------------3");
         if(tokenCookie == null){
             log.warn("[登入验证] 未找到token的cookie");
             throw new SellerAuthException(ResultEnum.VERIFY_FAIL);
@@ -53,5 +60,4 @@ public class SellerAuthorizeAspect {
             }
         }
     }
-
 }
