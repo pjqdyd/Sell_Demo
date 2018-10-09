@@ -15,7 +15,9 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -43,10 +45,22 @@ public class SellerUserController {
             map.put("url","/sell/seller/order/list");
             return new ModelAndView("common/error");
         }
+
+        //遍历redis数据库的所有value,与登入的openid比较,如果已存在,证明已有人用该openid登入,抛错
+        Set<String> keys = redisTemplate.opsForValue().getOperations().keys("token_"+"*");
+        List<String> values =  redisTemplate.opsForValue().multiGet(keys);
+        for (String value: values) {
+            if(value.equals(openid)){
+                map.put("msg","你已在其它地方登入!");
+                map.put("url","/sell/seller/order/list");
+                return new ModelAndView("common/error");
+            }
+        }
         //设置token至redis
         String token = UUID.randomUUID().toString();
         Integer expire = 7200; //过期时间
         redisTemplate.opsForValue().set(String.format("token_"+token),openid,expire,TimeUnit.SECONDS);
+
 
         //设置token至cookie
         Cookie cookie = new Cookie("token",token);
