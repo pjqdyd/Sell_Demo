@@ -14,6 +14,7 @@ import com.example.sell.repository.OrderMasterRepository;
 import com.example.sell.service.OrderService;
 import com.example.sell.service.PayService;
 import com.example.sell.service.ProductService;
+import com.example.sell.service.WebSocket;
 import com.example.sell.utils.KeyUtil;
 import com.example.sell.utils.OM_2_ODTO;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +50,9 @@ public class OrderServiceImpl implements OrderService {
     private PayService payService;
     @Autowired
     private PushMessageServiceImpl pushMessageService;
+    @Autowired
+    private WebSocket webSocket;
+
     @Override
     @Transactional
     public OrderDTO create(OrderDTO orderDTO) {
@@ -89,6 +93,9 @@ public class OrderServiceImpl implements OrderService {
              new CartDTO(e.getProductId(),e.getProductQuantity()))
                 .collect(Collectors.toList());
         productService.decreaseStock(cartDTOList);
+
+        //5.发送websocket消息
+        webSocket.sendMessage(orderDTO.getOrderId());
 
         return orderDTO;
     }

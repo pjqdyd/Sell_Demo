@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 
-//捕获卖家验证异常的类
+//捕获异常的类
 @ControllerAdvice
 public class SellerExceptionHandler {
 
@@ -13,5 +13,9 @@ public class SellerExceptionHandler {
     public ModelAndView handlerSellerAuthException(){
         return new ModelAndView("redirect:"+
                "http://www.baidu.com");
+        //验证不通过就跳转到微信扫码登入的地址
     }
+
+
+
 }
